@@ -1,0 +1,12 @@
+{%extends "layout.html"%}
+
+
+{% block main %}
+<title>Search</title>
+    <form action="/search" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="moviename" name="moviename" placeholder="Movie name" type="text" style="background-color: black;">
+        </div>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+{% endblock %}

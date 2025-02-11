@@ -1,0 +1,56 @@
+{%extends "layout.html"%}
+
+
+{% block main %}
+<style>
+ td{
+  margin: 0px 0px;
+  padding: 20px 0px;
+  float: left;
+  width: 40%;
+  border-top: 1px solid #4c4f52 !important;
+}
+table{
+  margin-left: 200px;
+}
+input{
+  margin: 0px;
+  padding: 0px;
+}
+form{
+  margin: 0px;
+  padding: 0px;
+  width: 50%;
+}
+.moviefont{
+        text-decoration: none !important;
+        font-family: Arial, Helvetica, sans-serif;
+        color:#313335 !important;
+        font-size: larger;
+    }
+    .moviefont:hover{
+        color:#4c4f52 !important;
+    }
+        #movieImages{
+            border-radius: 5%;
+        }
+        #movieImages:hover{
+          box-shadow:  0 0 0 2px #DDEEFF;
+        }
+
+</style>
+<table id="tabledata">
+
+{%for movie in movies%}
+<tr >
+   <td>
+    <form action="/movie" method="post"><input name="moviename" type="hidden" value="{{movie[0][1]}}"><input type="image" src="" alt="{{movie[0][1]}}" class="images" name="{{movie[0][1]}}" id="movieImages"></td>
+  <td>
+          <input type="submit" value="{{movie[0][1]}}" class="moviefont" name="moviename"></form>
+          <form action="/year" method="post"><input type="submit" name="releaseyear"value="{{movie[0][2]}}" class="releaseyear"></form>
+        </td>
+</tr>
+{%endfor%}
+</table>
+<script src="/static/loadimages.js" type="module"></script>
+  {% endblock %}

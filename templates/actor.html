@@ -1,0 +1,68 @@
+{%extends "layout.html"%}
+{% block main %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{actorName}}</title>
+    </head>
+    <style>
+        .wrapperDiv{
+            display: flex;
+        }
+        .movieList{
+            margin: auto;
+            padding: 50px 100px;
+        }
+        .movieList form{
+            display: inline;
+            padding: 10px 5px;
+
+        }
+        .movieList input{
+            border-radius: 6px;
+        }
+
+        .movieList input:hover{
+            box-shadow:  0 0 0 2px #DDEEFF;
+        }
+        .actorImage{
+            margin-right: 50px;
+        }
+        .actorImage p{
+            color: rgb(122, 138, 152);
+        }
+        .actorImage img{
+            border-radius: 6px;
+            border: 0.5px solid rgb(54, 53, 53);
+        }
+        .actorImage img:hover{
+            border: 0.5px solid rgb(147, 145, 145);
+        }
+        #bioText{
+            width: 200px;
+        }
+    </style>
+<body>
+    <p id="actorname" style="display: none;">{{actorName}}</p>
+    <div class="wrapperDiv">
+        <div class="movieList">
+                {%for movie in movies%}
+                <form action="/movie" method="post">
+                <input src="" alt="{{movie[1]}}" class="images" name="{{movie[0]}}" id="movieImages" type="image">
+                <input type="hidden" name="moviename" value="{{movie[1]}}" style="display: none;">
+                </form>
+                {%endfor%}
+        </div>
+        <div class="actorImage">
+            <img src="" alt="" id="actorProfile">
+            <p id="bioText"></p>
+        </div>
+    </div>
+</body>
+<script src="../static/setupActor.js" type="module"></script>
+</html>
+
+{% endblock %}

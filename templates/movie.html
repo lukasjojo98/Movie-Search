@@ -1,0 +1,359 @@
+{%extends "layout.html"%}
+{% block main %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{movie[0][1]}}</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+</head>
+
+<style>
+body{
+    background-color: rgb(21, 24, 29);
+}
+#image{
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    }
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal2 {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: rgb(68, 84, 102);
+  padding: 80px;
+  margin: auto;
+  border: 1px solid #888;
+  width: 80%;
+}
+.modal-content2 {
+  background-color: rgb(68, 84, 102);
+  padding: 20px;
+  margin: auto;
+  border: 1px solid #888;
+  width: 25%;
+  border-radius: 5px;
+}
+#listOptions td{
+    padding: auto;
+    color:rgb(187, 204, 221);
+}
+#listOptions{
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+#listOptions tr{
+    border-top: 1px solid rgb(50, 67, 85);
+}
+#listOptions tr:hover td{
+    color: white;
+}
+
+.wrapper{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 80%;
+    margin: auto;
+
+}
+.reviews{
+    margin: 50px 0;
+}
+
+.rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+.rating > input{
+  display:none;
+}
+.rating > label {
+  position: relative;
+  font-size: 20px;
+  width: 30px;
+  color: rgb(145, 162, 172);
+  cursor: pointer;
+}
+.rating > label::before{
+  content: "\2605";
+  position: absolute;
+  opacity: 0;
+}
+.rating > label:hover:before,
+.rating > label:hover ~ label:before {
+  opacity: 1 !important;
+ /* shame... shame... shame... I'll explain that later*/
+}
+.rating > input:checked ~ label:before{
+  opacity: 1;
+}
+.icons{
+    display: flex;
+    gap: 20px;
+}
+.icon-description{
+    margin: 10px auto;
+}
+.icon-description span:hover{
+    color: white;
+}
+.icon-description p,span{
+    color: rgb(145, 162, 172);
+}
+.rating-container form:hover input{
+    color: white !important;;
+}
+.rating-container{
+    flex-basis: auto;
+    background-color: rgb(68, 84, 102);
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.rating-container form{
+    padding: 5px 20px;
+    border-top: 1px solid rgb(21, 24, 29);
+}
+.list-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.list-item{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#actorData form:hover input{
+    color: white !important;
+}
+#actorData{
+    margin-top: 40px;
+}
+#actorData input{
+    background-color: rgb(68, 84, 102) !important;
+    color:rgb(153, 170, 187) !important;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 15px;
+}
+.film-header{
+    color: white;
+}
+.director{
+    color: white;
+}
+.description{
+    color: rgb(153, 170, 187);
+    font-family: 'Times New Roman', Times, serif;
+}
+.middle-item{
+    text-align: left;
+}
+.middle-container{
+    width: 50%;
+}
+.actor-row{
+    display: flex;
+    gap: 10px;
+    margin: 5px 0;
+}
+@media screen and (max-width: 600px) {
+    .wrapper{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #actorData{
+       margin: 10px auto;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+    }
+    .reviews{
+        text-align: center;
+        margin: auto;
+    }
+    #actorData input{
+        font-size: 10px;
+        border-radius: 3px;
+    }
+    .middle-container{
+        width: 100%;
+    }
+    .middle-item{
+        text-align: center;
+    }
+    .actor-row{
+        gap: 1px;
+        margin: 1px 0;
+    }
+}
+</style>
+<body>
+<div class="wrapper">
+    <div class="poster">
+<img src="" alt="movie" id="image">
+</div>
+<div class="middle-container">
+    <div class="middle-item">
+<h3 id="movie" value="{{movie[0][1]}}" class="film-header">{{movie[0][1]}}</h3>
+<p id="movieYear" value="{{movie[0][2]}}" class="director">{{movie[0][2]}}</p>
+<p id="overviewText" class="description"></p>
+</div>
+<div id="actorData">
+    <div class="actor-row"></div>
+    <div class="actor-row"></div>
+    <div class="actor-row"></div>
+    <div class="actor-row"></div>
+    <div class="actor-row"></div>
+</div>
+<table class="reviews">
+    {%for review in reviews%}
+    <tr style="border-top: 1px solid rgb(153, 170, 187);">
+        <td style="color:rgb(153, 170, 187);">Review by <strong>{{review[1]}}</strong></td>
+    </tr>
+    <tr>
+        <td><p align="left" style="color:rgb(153, 170, 187);">{{review[4]}}</p></td>
+    </tr>
+    {%endfor%}
+</table>
+
+</div>
+<div>
+    <div class="rating-container">
+    <div class="icons">
+        <div class="icon-description">
+        <span class="material-symbols-outlined">
+            visibility
+            </span>
+            <p>Watch</p>
+        </div>
+        <div class="icon-description">
+        <span class="material-symbols-outlined">
+                favorite
+            </span>
+            <p>Like</p>
+        </div>
+        <div class="icon-description">
+            <span class="material-symbols-outlined">
+                more_time
+                </span>
+                <p>Watchlist</p>
+            </div>
+    </div>
+    <form action="/movie" method="get" style="border-bottom: 1px solid rgb(21, 24, 29);" id="rating-form">
+        <p style="color: rgb(145, 162, 172) !important; margin: 0;">Rate</p>
+        <div class="rating">
+            <input type="hidden" value="{{movie[0][1]}}" name="moviename">
+            <input type="radio" name="rating" value="5" id="5" {{rating[5]}}><label for="5">☆</label>
+            <input type="radio" name="rating" value="4" id="4" {{rating[4]}}><label for="4">☆</label>
+            <input type="radio" name="rating" value="3" id="3" {{rating[3]}}><label for="3">☆</label>
+            <input type="radio" name="rating" value="2" id="2" {{rating[2]}}><label for="2">☆</label>
+            <input type="radio" name="rating" value="1" id="1" {{rating[1]}}><label for="1">☆</label>
+          </div>
+</form>
+    <input id="listButton"type="submit" name="ratingform" value="Add to lists..." style="text-decoration: none; color: rgb(145, 162, 172) !important; margin: 5px 0; "> <br>
+  <form action="javascript:void(0);">
+<input type="hidden" value="{{movie[0][1]}}" name ="moviename">
+<input id="reviewButton" type="submit" name="review" value="Review..." style="text-decoration: none; color: rgb(145, 162, 172) !important; margin: 5px 0;">
+ </form>
+<!--<form action="/watchlist" method="post">
+<input type="submit" name="watchlist" value="Add to Watchlist" style="text-decoration: none; color: rgb(145, 162, 172) !important; margin: 5px 0;">
+<input type="hidden" value="{{movie[0][1]}}" name ="moviename">
+</form>-->
+</div>
+</div>
+</div>
+<div class="modal" id="myModal">
+    <div class="modal-content" style="display: table;">
+        <img src="" alt="movie" id="reviewImage" style="float: left; border-radius: 5px;
+        ">
+        <div>
+            <form action="/reviews" method="POST" >
+            <h3 style="color: white; width: 70%;" id="reviewMoviename">{{movie[0][1]}}</h3>
+            <textarea name="reviewText" id="reviewText" cols="10" rows="10" placeholder="Add a review..." style="float: left; width: 40%; margin-left: 50px; border-radius: 2%; outline: none; border: none; resize: none; background-color: rgb(204, 222, 238);"></textarea>
+                <input type="submit" value="SAVE" style="background-color: rgb(0, 176, 33);
+                border-radius: 3px;
+                padding: 5px 10px;">
+                <input type="hidden" name="movieID" value="{{movie[0][0]}}">
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal2" id="myModal2">
+    <div class="modal-content2" >
+        <div class="list-container">
+            <div>
+        <p style="color: white;" id="reviewMoviename">Add <strong>'{{movie[0][1]}}'</strong> to lists</p>
+        <table id="listOptions">
+            {%for list in lists%}
+            <tr onclick="addMovieToList(this)">
+                <td>
+                    <p>{{list[1]}}</p>
+                    <p style="display: none;" id="listid">{{list[0]}}</p>
+                </td>
+                <td>
+                    <p>{{list[4]}} film(s)</p>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+        <div class="list-item">
+        <p style="color:rgb(187, 204, 221);" id="selectedLists">0 lists selected</p>
+            <form action="/list" style="
+            background-color: rgb(0, 176, 33);
+            border-radius: 3px;
+            padding: 5px 10px;" method="POST">
+            <input type="submit" value="ADD">
+        </div>
+    </div>
+            <input type="hidden" name="movieID" value="{{movie[0][0]}}">
+            {%for list in lists%}
+            <input type="hidden" name="list{{list[0]}}" value="{{list[0]}}" id="listsClicked" disabled>
+            {%endfor%}
+        </form>
+    </div>
+</div>
+</body>
+<script src="/static/loadmovie.js" type="module"></script>
+
+
+
+{% endblock %}

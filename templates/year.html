@@ -1,0 +1,36 @@
+{%extends "layout.html"%}
+
+{% block main%}
+<style>
+   table, th, td {
+  border: 1px none black;
+  padding: 20px;
+}
+table {
+  border-spacing: 15px; 
+}
+.moviefont{
+        text-decoration: none !important;
+        font-family: Arial, Helvetica, sans-serif;
+        color:#313335 !important;
+        font-size: larger;
+    }
+    .moviefont:hover{
+        color:#4c4f52 !important;
+    }
+
+</style>
+{%for year in years%}
+<table>
+    <tr>
+    <td><img src="" alt="{{year[1]}}" class="images" name="{{year[1]}}"></td>
+    <td><form action="/movie" method="post">
+        <input name="movie" type="hidden" value="{{year[1]}}" >
+        <input type="submit" class="moviefont" value="{{year[1]}}">
+    </form></td>
+</tr>
+{%endfor%}
+</table>
+<script src="/static/loadimages.js" type="module"></script>
+
+{% endblock %}

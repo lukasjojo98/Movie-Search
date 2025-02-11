@@ -1,0 +1,66 @@
+{%extends "layout.html"%}
+
+
+{% block main %}
+<title>Search results for {{searchquery}}</title>
+
+<style>
+td{
+  margin: 0px 0px;
+  padding: 20px 0px;
+  float: left;
+  width: 40%;
+  border-top: 1px solid #4c4f52;
+}
+th{
+  color: #4c4f52;
+  font-weight: 300;
+  text-align: left;
+}
+table{
+  margin-left: 200px;
+}
+input{
+  margin: 0px;
+  padding: 0px;
+}
+form{
+  margin: 0px;
+  padding: 0px;
+  width: 50%;
+}
+.moviefont{
+        text-decoration: none !important;
+        font-family: Arial, Helvetica, sans-serif;
+        color:#313335 !important;
+        font-size: larger;
+    }
+    .moviefont:hover{
+        color:#4c4f52 !important;
+    }
+    #movieImages{
+            border-radius: 5%;
+        }
+    #movieImages:hover{
+      box-shadow:  0 0 0 2px #DDEEFF;
+        }
+  </style>
+<table id="tabledata">
+  <tr><th>FOUND AT LEAST {{movies|length}} MATCHES FOR "{{searchquery}}"</th>
+  </tr>
+{%for movie in movies%}
+<form action="/movie" method="post"><input name="movie" type="hidden" value="{{movie[1]}}">
+<tr> <td>
+        <input type="image" src="" alt="{{movie[1]}}" class="images" name="{{movie[0]}}"id="movieImages">
+        <input type="hidden" name="moviename" value="{{movie[1]}}">
+</td>
+  <td>
+          <input type="submit" value="{{movie[1]}}" class="moviefont" name="moviename"></form>
+          <form action="/year" method="post"><input type="submit" name="releaseyear"value="{{movie[2]}}" class="movieyear"></form>
+        </td>
+
+</tr>
+{%endfor%}
+</table>
+<script src="/static/findMoviePosterByImdbID.js" type="module"></script>
+  {% endblock %}
