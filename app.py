@@ -31,7 +31,7 @@ def createConnection(dbfile, moviename):
     finally:
         if conn:
             conn.close()
-def runQuery(dbfile,query):
+def runQuery(dbfile, query):
     conn = None
     try:
         ROOT = path.dirname(path.realpath(__file__))
@@ -165,22 +165,30 @@ def index():
         username = ", " + username
     else:
         username = ""
-    return render_template("layout.html", username = username)
+    ROOT = path.dirname(path.realpath(__file__))
+    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    db = conn.cursor()
+    try: db.execute("SELECT id, title FROM ratings, movies WHERE id = movie_id AND votes > 40000 ORDER BY rating DESC LIMIT 10;")
+    except: print("error")
+    movies = db.fetchall()
+    return render_template("layout.html", username = username, movies = movies)
 
 
 @app.route("/movie",methods=["GET","POST"])
 def movie():
     rating = {1:"unchecked", 2: "unchecked", 3:"unchecked", 4:"unchecked", 5:"unchecked"}
     if request.method == "POST":
-        print(request.form.get("moviename"))
         movie_name = request.form.get("moviename")
-        print(movie_name)
-        movie = createConnection(r"movies.db", movie_name)
-        print(movie)
+        movie_id = request.form.get("movie_id")
+        ROOT = path.dirname(path.realpath(__file__))
+        conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+        db = conn.cursor()
+        movie = db.execute("SELECT * FROM movies WHERE id = (?)", [movie_id]).fetchall()
+        director = db.execute("SELECT p.name FROM people p, movies m, directors d WHERE d.movie_id = (?) AND d.person_id = p.id AND m.title = (?)", [movie_id, movie_name]).fetchall()[0][0]
         ROOT = path.dirname(path.realpath(__file__))
         conn = sqlite3.connect(path.join(ROOT, "users.db"))
         db = conn.cursor()
-        try: db.execute("SELECT * FROM reviews WHERE user_id = (?) AND movie_id = (?)", [session["user_id"],movie[0][0]])
+        try: db.execute("SELECT * FROM reviews WHERE user_id = (?) AND movie_id = (?)", [session["user_id"], movie_id])
         except: return redirect("register")
         currentReviews = db.fetchall()
         db.execute("SELECT * FROM list WHERE user_id = (?)",[session["user_id"]])
@@ -192,13 +200,14 @@ def movie():
             tmpList = list(currentReview)
             tmpList[1] = username
             tmpReviews.append(tmpList)
-        db.execute("SELECT * FROM ratings WHERE user_id = (?) AND movie_id = (?)",[session["user_id"], movie[0][0]])
+        db.execute("SELECT * FROM ratings WHERE user_id = (?) AND movie_id = (?)",[session["user_id"], movie_id])
         ratingDatabase = db.fetchall()
         if len(ratingDatabase) == 0:
             pass
         else:
             rating[ratingDatabase[0][3]] = "checked"
-        return render_template("movie.html", movie = movie, rating = rating, reviews = tmpReviews, lists = availableLists)
+        print(movie)
+        return render_template("movie.html", movie = movie, rating = rating, reviews = tmpReviews, lists = availableLists, director = director)
     else:
         ROOT = path.dirname(path.realpath(__file__))
         conn = sqlite3.connect(path.join(ROOT, "users.db"))
@@ -331,7 +340,6 @@ def reviews():
 @app.route("/list", methods=["GET","POST"])
 def listRoute():
     if request.method == "POST":
-        print(request.form)
         movieID = request.form.get("movieID")
         ROOT = path.dirname(path.realpath(__file__))
         conn = sqlite3.connect(path.join(ROOT, "users.db"))
@@ -340,11 +348,9 @@ def listRoute():
         numberLists = len(list(request.form))
         for i in range(1, numberLists):
             listIDs.append(list(request.form)[i])
-        print(listIDs)
         for j in range(0,len(listIDs)):
             db.execute("INSERT INTO listEntries (list_id, user_id, movie_id) VALUES (?,?,?)", [request.form.get(listIDs[j]), session["user_id"], movieID])
             conn.commit()
-        #db.execute("SELECT * FROM listEntries WHERE user_id = (?)", [session["user_id"]])
         db.execute("SELECT * FROM list WHERE user_id = (?)", [session["user_id"]])
         result = db.fetchall()
         finalList = []
@@ -364,14 +370,12 @@ def listRoute():
                 tmp.append(list(db.fetchall()[0])[0])
                 tmpList2.append(tmp)
             finalList.append(tmpList2)
-        print(finalList)
         for m in range(0, len(finalList)):
             if len(list(finalList)[m]) < 4:
                 for n in range(len(finalList[m]) - 1, 3):
                     tmpList3 = ["","","",""]
                     tmpList4 = list(finalList)
                     tmpList4[m].append(tmpList3)
-        print(result)
         return render_template("/list.html", results = result, finalList = finalList)
     if request.method == "GET":
         ROOT = path.dirname(path.realpath(__file__))
@@ -465,3 +469,7 @@ def actor(actorname):
     db.execute("SELECT * FROM movies WHERE id in ( SELECT movie_id FROM stars WHERE person_id in ( SELECT id FROM people WHERE name LIKE (?)))",[actorname])
     movieList = db.fetchall()
     return render_template("actor.html", actorName = actorname, movies = movieList)
+
+
+if __name__=="__main__":
+    app.run("0.0.0.0", port="5000")

@@ -74,6 +74,7 @@
     }
     #layout-movies{
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin: auto;
     margin-bottom: 0 !important;
@@ -203,7 +204,15 @@
             <h1>Welcome back{{username}}!</h1>
     <div class="layout-container">
     <div class="layout-item"><h3 id="trendingCaption">Highest Rated Movies</h3></div>
-    <div id="layout-movies"></div>
+    <div id="layout-movies">
+        {%for movie in movies%}
+        <form action="/movie" method="post">
+            <input type="image" src="" alt="" id="images" name="{{movie[0]}}">
+            <input type="hidden" name="movie_id" value="{{movie[0]}}">
+            <input type="hidden" name="moviename" value="{{movie[1]}}">
+        </form>
+        {% endfor %}
+    </div>
 </div>
     <script src="/static/layout.js" type="module">
     </script>

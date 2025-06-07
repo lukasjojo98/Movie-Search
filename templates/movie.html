@@ -163,11 +163,17 @@ body{
 }
 #actorData{
     margin-top: 40px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+#actorData form {
+    padding: 2px 5px;
 }
 #actorData input{
+    padding: 10px;
     background-color: rgb(68, 84, 102) !important;
     color:rgb(153, 170, 187) !important;
-    width: 100%;
     border-radius: 5px;
     font-size: 15px;
 }
@@ -232,7 +238,7 @@ body{
 <div class="middle-container">
     <div class="middle-item">
 <h3 id="movie" value="{{movie[0][1]}}" class="film-header">{{movie[0][1]}}</h3>
-<p id="movieYear" value="{{movie[0][2]}}" class="director">{{movie[0][2]}}</p>
+<p id="movieYear" value="{{movie[0][2]}}" class="director">{{movie[0][2]}} Directed By {{director}}</p>
 <p id="overviewText" class="description"></p>
 </div>
 <div id="actorData">

@@ -49,16 +49,19 @@ form{
   <tr><th>FOUND AT LEAST {{movies|length}} MATCHES FOR "{{searchquery}}"</th>
   </tr>
 {%for movie in movies%}
-<form action="/movie" method="post"><input name="movie" type="hidden" value="{{movie[1]}}">
-<tr> <td>
-        <input type="image" src="" alt="{{movie[1]}}" class="images" name="{{movie[0]}}"id="movieImages">
-        <input type="hidden" name="moviename" value="{{movie[1]}}">
-</td>
+<form action="/movie" method="post">
+  <input name="movie" type="hidden" value="{{movie[1]}}">
+<tr>
+   <td>
+      <input type="image" src="" alt="{{movie[1]}}" class="images" name="{{movie[0]}}" id="movieImages">
+      <input type="hidden" name="moviename" value="{{movie[1]}}">
+      <input type="hidden" name="movie_id" value="{{movie[0]}}">
+  </td>
   <td>
-          <input type="submit" value="{{movie[1]}}" class="moviefont" name="moviename"></form>
-          <form action="/year" method="post"><input type="submit" name="releaseyear"value="{{movie[2]}}" class="movieyear"></form>
-        </td>
-
+      <input type="submit" value="{{movie[1]}}" class="moviefont" name="moviename">
+</form>
+  <form action="/year" method="post"><input type="submit" name="releaseyear"value="{{movie[2]}}" class="movieyear"></form>
+  </td>
 </tr>
 {%endfor%}
 </table>

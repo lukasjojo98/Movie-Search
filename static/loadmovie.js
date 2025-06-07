@@ -65,7 +65,7 @@ let findActors = function(movieID){
         inputElement.name = "actorname";
         formElement.action = "/actor/" + actorList[i].name;
         formElement.appendChild(inputElement);
-        document.getElementById("actorData").children[index].appendChild(formElement);
+        document.getElementById("actorData").appendChild(formElement);
     }
     });
 }
