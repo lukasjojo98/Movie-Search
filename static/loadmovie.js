@@ -43,13 +43,6 @@ let findActors = function(movieID){
     fetch(actorUrl)
     .then(result=>result.json())
     .then((data) => {
-        data["crew"].forEach((element) => {
-            if(element["job"] == "Director"){
-                var directorName = element["name"];
-                document.getElementById("movieYear").innerHTML += "   Directed by " + directorName;
-                return;
-            }
-        });
     var actorList = data["cast"];
     let actorRowDivList = document.getElementById("actorData").children;
     let index = 0;
