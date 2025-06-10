@@ -24,10 +24,13 @@ table {
 <table>
     <tr>
     <td><img src="" alt="{{year[1]}}" class="images" name="{{year[1]}}"></td>
-    <td><form action="/movie" method="post">
-        <input name="movie" type="hidden" value="{{year[1]}}" >
-        <input type="submit" class="moviefont" value="{{year[1]}}">
-    </form></td>
+    <td>
+        <form action="/movie/{{ year[1] | lower | replace(" ", "-") }}" method="post">
+            <input name="moviename" type="hidden" value="{{year[1]}}">
+            <input type="hidden" name="movie_id" value="{{year[0]}}">
+            <input type="submit" class="moviefont" value="{{year[1]}}">
+        </form>
+    </td>
 </tr>
 {%endfor%}
 </table>

@@ -49,7 +49,7 @@ form{
   <tr><th>FOUND AT LEAST {{movies|length}} MATCHES FOR "{{searchquery}}"</th>
   </tr>
 {%for movie in movies%}
-<form action="/movie" method="post">
+<form action="/movie/{{ movie[1] | lower | replace(" ", "-") }}" method="post">
   <input name="movie" type="hidden" value="{{movie[1]}}">
 <tr>
    <td>
@@ -60,7 +60,9 @@ form{
   <td>
       <input type="submit" value="{{movie[1]}}" class="moviefont" name="moviename">
 </form>
-  <form action="/year" method="post"><input type="submit" name="releaseyear"value="{{movie[2]}}" class="movieyear"></form>
+  <form action="/year" method="get">
+    <input type="submit" name="releaseyear"value="{{movie[2]}}" class="movieyear">
+  </form>
   </td>
 </tr>
 {%endfor%}

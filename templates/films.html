@@ -44,10 +44,17 @@ form{
 {%for movie in movies%}
 <tr >
    <td>
-    <form action="/movie" method="post"><input name="moviename" type="hidden" value="{{movie[0][1]}}"><input type="image" src="" alt="{{movie[0][1]}}" class="images" name="{{movie[0][1]}}" id="movieImages"></td>
+    <form action="/movie/{{ movie[0][1] | lower | replace(" ", "-") }}" method="post">
+      <input name="moviename" type="hidden" value="{{movie[0][1]}}">
+      <input type="image" src="" alt="{{movie[0][1]}}" class="images" name="{{movie[0][1]}}" id="movieImages">
+    </td>
   <td>
-          <input type="submit" value="{{movie[0][1]}}" class="moviefont" name="moviename"></form>
-          <form action="/year" method="post"><input type="submit" name="releaseyear"value="{{movie[0][2]}}" class="releaseyear"></form>
+        <input type="submit" value="{{movie[0][1]}}" class="moviefont" name="moviename">
+        <input type="hidden" name="movie_id" value="{{movie[0][0]}}">
+    </form>
+          <form action="/year" method="get">
+            <input type="submit" name="releaseyear" value="{{movie[0][2]}}" class="releaseyear">
+          </form>
         </td>
 </tr>
 {%endfor%}

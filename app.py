@@ -174,8 +174,8 @@ def index():
     return render_template("layout.html", username = username, movies = movies)
 
 
-@app.route("/movie",methods=["GET","POST"])
-def movie():
+@app.route("/movie/<movie_name>", methods=["GET","POST"])
+def movie(movie_name):
     rating = {1:"unchecked", 2: "unchecked", 3:"unchecked", 4:"unchecked", 5:"unchecked"}
     if request.method == "POST":
         movie_name = request.form.get("moviename")
@@ -184,7 +184,8 @@ def movie():
         conn = sqlite3.connect(path.join(ROOT, "movies.db"))
         db = conn.cursor()
         movie = db.execute("SELECT * FROM movies WHERE id = (?)", [movie_id]).fetchall()
-        director = db.execute("SELECT p.name FROM people p, movies m, directors d WHERE d.movie_id = (?) AND d.person_id = p.id AND m.title = (?)", [movie_id, movie_name]).fetchall()[0][0]
+        try: director = db.execute("SELECT p.name FROM people p, movies m, directors d WHERE d.movie_id = (?) AND d.person_id = p.id AND m.title = (?)", [movie_id, movie_name]).fetchall()[0][0]
+        except: director = ""
         ROOT = path.dirname(path.realpath(__file__))
         conn = sqlite3.connect(path.join(ROOT, "users.db"))
         db = conn.cursor()
@@ -248,11 +249,9 @@ def search():
     conn = sqlite3.connect(path.join(ROOT, "movies.db"))
     db = conn.cursor()
     if request.method == "GET":
-        return render_template("search.html")
-    else:
-        dbquery = "SELECT * FROM movies WHERE title LIKE '%"+ request.form.get("moviename")+ "%';"
+        dbquery = "SELECT * FROM movies WHERE title LIKE '%"+ request.args.get("moviename")+ "%';"
         movies = db.execute(dbquery).fetchall()
-        return render_template("searchresults.html", movies = movies, searchquery = request.form.get("moviename"))
+        return render_template("searchresults.html", movies = movies, searchquery = request.args.get("moviename"))
 
 @app.route("/year", methods=["GET", "POST"])
 def year():
@@ -260,7 +259,11 @@ def year():
     conn = sqlite3.connect(path.join(ROOT, "movies.db"))
     db = conn.cursor()
     if request.method == "POST":
-        dbquery = "SELECT * FROM movies WHERE year = "+ request.form.get("releaseyear")+ ";"
+        dbquery = "SELECT * FROM movies WHERE year = "+ request.form.get("releaseyear") + ";"
+        years = db.execute(dbquery).fetchall()
+        return render_template("year.html", years = years)
+    elif request.method == "GET":
+        dbquery = "SELECT * FROM movies WHERE year = "+ request.args.get("releaseyear") + ";"
         years = db.execute(dbquery).fetchall()
         return render_template("year.html", years = years)
     else:
@@ -290,6 +293,7 @@ def films():
     for i in movies:
         db.execute("SELECT * FROM movies WHERE id = (?)",[i[1]])
         movieList.append(db.fetchall())
+    print(movieList)
     return render_template("films.html", movies = movieList)
 
 

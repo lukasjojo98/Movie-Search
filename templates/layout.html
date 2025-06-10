@@ -162,7 +162,7 @@
     <span class="material-symbols-outlined" id="cancel-icon" style="color: rgb(68, 84, 102); display: none;">close</span>
     <span class="material-symbols-outlined" style="color: rgb(68, 84, 102);" id="search-icon">search</span>
     <div style="display: relative;">
-    <form action="/search" method="post" style="display: none;" class="search-bar fade-in" id="search-form">
+    <form action="/search" method="get" style="display: none;" class="search-bar fade-in" id="search-form">
             <input autocomplete="off" id="moviename" name="moviename" type="text" style="color: black!important;">
     </form>
     <span class="material-symbols-outlined" id="search-input-icon" style="display: none; color: black;">
@@ -206,7 +206,7 @@
     <div class="layout-item"><h3 id="trendingCaption">Highest Rated Movies</h3></div>
     <div id="layout-movies">
         {%for movie in movies%}
-        <form action="/movie" method="post">
+        <form action="/movie/{{ movie[1] | lower | replace(" ", "-") }}" method="post">
             <input type="image" src="" alt="" id="images" name="{{movie[0]}}">
             <input type="hidden" name="movie_id" value="{{movie[0]}}">
             <input type="hidden" name="moviename" value="{{movie[1]}}">
