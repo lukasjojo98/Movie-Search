@@ -4,16 +4,16 @@ let baseURL = 'https://api.themoviedb.org/3/';
 let baseImageURL = "https://image.tmdb.org/t/p/";
 let imageSize = "w185";
 
-    function formatMovieName(name){
-        let movienameArray = name.split(/(\s+)/);
-        for (var i = 1; i < movienameArray.length; i = i + 2){
-            movienameArray[i] = "+";
-        }
-        let moviename = movienameArray.join("");
-        return moviename;
+function formatMovieName(name){
+    let movienameArray = name.split(/(\s+)/);
+    for (var i = 1; i < movienameArray.length; i = i + 2){
+        movienameArray[i] = "+";
     }
-    
-    let Images = async function loadImages(){
+    let moviename = movienameArray.join("");
+    return moviename;
+}
+
+async function loadImages(){
     var images = document.getElementsByClassName("images");
     for (var i = 0; i < images.length; i++){
     let moviename = formatMovieName(images[i].name);
@@ -32,5 +32,18 @@ let imageSize = "w185";
         }
         });
     }
+}
+
+function handleClickOnImage(element) {
+    const parentID = String(element.srcElement.parentElement.id).split("-")[2];
+    const formElement = document.getElementById("movie-form-" + parentID);
+    formElement.submit();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadImages();
+    const images = document.querySelectorAll('.images');
+    for(let i = 0; i < images.length; i++){
+        images[i].addEventListener("click", handleClickOnImage);
     }
-document.addEventListener('DOMContentLoaded', Images);
+});

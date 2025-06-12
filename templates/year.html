@@ -2,38 +2,73 @@
 
 {% block main%}
 <style>
-   table, th, td {
-  border: 1px none black;
-  padding: 20px;
-}
-table {
-  border-spacing: 15px; 
-}
-.moviefont{
+    .moviefont{
         text-decoration: none !important;
-        font-family: Arial, Helvetica, sans-serif;
-        color:#313335 !important;
-        font-size: larger;
+        color:#313335;
     }
     .moviefont:hover{
-        color:#4c4f52 !important;
+        color:#4c4f52;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: left;
+        gap: 50px;
+    }
+    .container-item {
+        display: flex;
+        gap: 50px;
+    }
+    .title-item {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .title-item input {
+        color: white;
+    }
+    .title-item input:hover {
+        color: grey;
+    }
+    .images {
+      border-radius: 10px;
+    }
+    .images:hover {
+      cursor: pointer;
+      box-shadow:  0 0 0 2px lightblue;
+    }
+    form {
+        width: fit-content;
     }
 
 </style>
-{%for year in years%}
-<table>
-    <tr>
-    <td><img src="" alt="{{year[1]}}" class="images" name="{{year[1]}}"></td>
-    <td>
-        <form action="/movie/{{ year[1] | lower | replace(" ", "-") }}" method="post">
-            <input name="moviename" type="hidden" value="{{year[1]}}">
-            <input type="hidden" name="movie_id" value="{{year[0]}}">
-            <input type="submit" class="moviefont" value="{{year[1]}}">
-        </form>
-    </td>
-</tr>
-{%endfor%}
-</table>
+<div class="container">
+    {%for year in years%}
+        <div class="container-item" id="container-item-{{loop.index}}">
+            <img src="" alt="{{year[1]}}" class="images" name="{{year[1]}}">
+            <div class="title-item">
+                <div style="display: flex; gap: 20px;">
+                    <form action="/movie/{{ year[1] | lower | replace(" ", "-") }}" method="post" id="movie-form-{{loop.index}}">
+                        <input name="moviename" type="hidden" value="{{year[1]}}">
+                        <input type="hidden" name="movie_id" value="{{year[0]}}">
+                        <input type="submit" class="moviefont" value="{{year[1]}}">
+                    </form>
+                    <form action="/year" method="get">
+                        <input type="submit" name="releaseyear" value="{{year[2]}}">
+                    </form>
+                </div>
+                    <div style="display: flex;">
+                        <div style="color: grey;">Directed by &hairsp;</div>
+                        <form action="/director/{{ year[3] | lower | replace(" ", "-") }}" method="post">
+                            <input type="submit" value="{{year[3]}}" name="directorname">
+                        </form>
+                    </div>
+                        
+            </div>
+            
+        </div>
+    {%endfor%}
+</div>
 <script src="/static/loadimages.js" type="module"></script>
 
 {% endblock %}

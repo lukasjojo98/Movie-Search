@@ -51,12 +51,12 @@ let findActors = function(movieID){
             index++;
         }
         var formElement = document.createElement("form");
-        formElement.method = "get";
+        formElement.method = "post";
         var inputElement = document.createElement("input");
         inputElement.type = "submit";
         inputElement.value = actorList[i].name;
         inputElement.name = "actorname";
-        formElement.action = "/actor/" + actorList[i].name;
+        formElement.action = "/actor/" + String(actorList[i].name).toLowerCase().replace(" ", "-");
         formElement.appendChild(inputElement);
         document.getElementById("actorData").appendChild(formElement);
     }

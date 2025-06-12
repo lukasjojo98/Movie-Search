@@ -249,8 +249,9 @@ def search():
     conn = sqlite3.connect(path.join(ROOT, "movies.db"))
     db = conn.cursor()
     if request.method == "GET":
-        dbquery = "SELECT * FROM movies WHERE title LIKE '%"+ request.args.get("moviename")+ "%';"
+        dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE m.title LIKE '%"+ request.args.get("moviename")+ "%' AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
         movies = db.execute(dbquery).fetchall()
+        print(movies)
         return render_template("searchresults.html", movies = movies, searchquery = request.args.get("moviename"))
 
 @app.route("/year", methods=["GET", "POST"])
@@ -259,11 +260,12 @@ def year():
     conn = sqlite3.connect(path.join(ROOT, "movies.db"))
     db = conn.cursor()
     if request.method == "POST":
-        dbquery = "SELECT * FROM movies WHERE year = "+ request.form.get("releaseyear") + ";"
+        dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE year = " + request.form.get("releaseyear") + " AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
         years = db.execute(dbquery).fetchall()
+        print(years)
         return render_template("year.html", years = years)
     elif request.method == "GET":
-        dbquery = "SELECT * FROM movies WHERE year = "+ request.args.get("releaseyear") + ";"
+        dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE year = " + request.args.get("releaseyear") + " AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
         years = db.execute(dbquery).fetchall()
         return render_template("year.html", years = years)
     else:
@@ -469,11 +471,22 @@ def newlist():
 def actor(actorname):
     ROOT = path.dirname(path.realpath(__file__))
     conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    actorname = request.form.get("actorname")
     db = conn.cursor()
     db.execute("SELECT * FROM movies WHERE id in ( SELECT movie_id FROM stars WHERE person_id in ( SELECT id FROM people WHERE name LIKE (?)))",[actorname])
     movieList = db.fetchall()
     return render_template("actor.html", actorName = actorname, movies = movieList)
 
+@app.route("/director/<directorname>", methods = ["GET","POST"])
+def director(directorname):
+    ROOT = path.dirname(path.realpath(__file__))
+    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    directorname = request.form.get("directorname")
+    db = conn.cursor()
+    db.execute("SELECT * FROM movies WHERE id in ( SELECT movie_id FROM directors WHERE person_id in ( SELECT id FROM people WHERE name LIKE (?)))",[directorname])
+    movieList = db.fetchall()
+    print(directorname)
+    return render_template("director.html", directorName = directorname, movies = movieList)
 
 if __name__=="__main__":
     app.run("0.0.0.0", port="5000")

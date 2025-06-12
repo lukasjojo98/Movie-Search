@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{actorName}}</title>
+    <title>{{directorName}}</title>
     </head>
     <style>
         .wrapperDiv{
@@ -46,7 +46,7 @@
         }
     </style>
 <body>
-    <p id="actorname" style="display: none;">{{actorName}}</p>
+    <p id="directorname" style="display: none;">{{directorName}}</p>
     <div class="wrapperDiv">
         <div class="movieList">
                 {%for movie in movies%}
@@ -63,7 +63,7 @@
         </div>
     </div>
 </body>
-<script src="../static/setupActor.js" type="module"></script>
+<script src="../static/setupDirector.js" type="module"></script>
 </html>
 
 {% endblock %}

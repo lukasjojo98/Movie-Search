@@ -176,11 +176,9 @@ body{
     color:rgb(153, 170, 187) !important;
     border-radius: 5px;
     font-size: 15px;
+    text-decoration: none !important;
 }
 .film-header{
-    color: white;
-}
-.director{
     color: white;
 }
 .description{
@@ -197,6 +195,18 @@ body{
     display: flex;
     gap: 10px;
     margin: 5px 0;
+}
+.header-item{
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    color: white;
+}
+.header-item input {
+    color: white;
+}
+.header-item input:hover {
+    color: grey;
 }
 @media screen and (max-width: 600px) {
     .wrapper{
@@ -237,10 +247,22 @@ body{
 </div>
 <div class="middle-container">
     <div class="middle-item">
-<h3 id="movie" value="{{movie[0][1]}}" class="film-header">{{movie[0][1]}}</h3>
-<p id="movieYear" value="{{movie[0][2]}}" class="director">{{movie[0][2]}} Directed By {{director}}</p>
-<p id="overviewText" class="description"></p>
-</div>
+        <div class="header-item">
+            <h3 id="movie" value="{{movie[0][1]}}" class="film-header">{{movie[0][1]}}</h3>
+            <div style="display: flex; gap: 10px;">
+                <form action="/year" method="get">
+                    <input type="submit" name="releaseyear" value="{{movie[0][2]}}">
+                </form>
+            <div style="display: flex;">
+                <div>Directed by &hairsp;</div>
+                <form action="/director/{{ director | lower | replace(" ", "-") }}" method="post">
+                    <input type="submit" value="{{director}}" name="directorname">
+                </form>
+            </div>
+            </div>
+        </div>
+        <p id="overviewText" class="description"></p>
+    </div>
 <div id="actorData">
     <div class="actor-row"></div>
     <div class="actor-row"></div>
