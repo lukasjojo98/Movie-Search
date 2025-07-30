@@ -6,9 +6,12 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlite3 import Error
 from helpers import apology, login_required
 from os import path
-import math
+from dotenv import load_dotenv
+import os, math
 
 app = Flask(__name__)
+load_dotenv(".env")
+movie_db_filepath = os.environ.get('MOVIE_DB')
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
@@ -166,7 +169,7 @@ def index():
     else:
         username = ""
     ROOT = path.dirname(path.realpath(__file__))
-    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
     db = conn.cursor()
     try: db.execute("SELECT id, title FROM ratings, movies WHERE id = movie_id AND votes > 40000 ORDER BY rating DESC LIMIT 10;")
     except: print("error")
@@ -181,7 +184,7 @@ def movie(movie_name):
         movie_name = request.form.get("moviename")
         movie_id = request.form.get("movie_id")
         ROOT = path.dirname(path.realpath(__file__))
-        conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+        conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
         db = conn.cursor()
         movie = db.execute("SELECT * FROM movies WHERE id = (?)", [movie_id]).fetchall()
         try: director = db.execute("SELECT p.name FROM people p, movies m, directors d WHERE d.movie_id = (?) AND d.person_id = p.id AND m.title = (?)", [movie_id, movie_name]).fetchall()[0][0]
@@ -216,7 +219,7 @@ def movie(movie_name):
         db.execute("SELECT * FROM list WHERE user_id = (?)",[session["user_id"]])
         availableLists = db.fetchall()
         movie_name = request.args["moviename"].replace(':', '')
-        movie = createConnection(r"movies.db", movie_name)
+        movie = createConnection(r"{movie_db_filepath}", movie_name)
         selectedRating = request.args["rating"]
         movie_id = movie[0][0]
         db.execute("SELECT * FROM ratings WHERE user_id = (?) AND movie_id = (?)", [5, movie_id])
@@ -246,7 +249,7 @@ def movie(movie_name):
 @app.route("/search", methods =["GET","POST"])
 def search():
     ROOT = path.dirname(path.realpath(__file__))
-    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
     db = conn.cursor()
     if request.method == "GET":
         dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE m.title LIKE '%"+ request.args.get("moviename")+ "%' AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
@@ -257,7 +260,7 @@ def search():
 @app.route("/year", methods=["GET", "POST"])
 def year():
     ROOT = path.dirname(path.realpath(__file__))
-    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
     db = conn.cursor()
     if request.method == "POST":
         dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE year = " + request.form.get("releaseyear") + " AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
@@ -274,7 +277,7 @@ def year():
 @app.route("/film", methods=["GET","POST"])
 def film():
     ROOT = path.dirname(path.realpath(__file__))
-    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
     db = conn.cursor()
     if request.method == "GET":
         dbquery = "SELECT * FROM movies WHERE year = "+ request.form.get("releaseyear")+ ";"
@@ -289,7 +292,7 @@ def films():
     db.execute("SELECT * FROM ratings WHERE user_id = (?)",[session["user_id"]])
     movies = db.fetchall()
     ROOT = path.dirname(path.realpath(__file__))
-    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
     db = conn.cursor()
     movieList = []
     for i in movies:
@@ -312,7 +315,7 @@ def reviews():
         db.execute("SELECT * FROM reviews WHERE user_id = (?)",[session["user_id"]])
         movies = db.fetchall()
         ROOT = path.dirname(path.realpath(__file__))
-        conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+        conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
         db = conn.cursor()
         tmpMovies = []
         for movie in movies:
@@ -330,7 +333,7 @@ def reviews():
         db.execute("SELECT * FROM reviews WHERE user_id = (?)",[session["user_id"]])
         movies = db.fetchall()
         ROOT = path.dirname(path.realpath(__file__))
-        conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+        conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
         db = conn.cursor()
         tmpMovies = []
         for movie in movies:
@@ -369,7 +372,7 @@ def listRoute():
             tmpList2 = []
             for entry in tmpList:
                 ROOT = path.dirname(path.realpath(__file__))
-                conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+                conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
                 db = conn.cursor()
                 db.execute("SELECT title FROM movies WHERE id = (?)",[entry[2]])
                 tmp = list(entry)
@@ -399,7 +402,7 @@ def listRoute():
             tmpList2 = []
             for entry in tmpList:
                 ROOT = path.dirname(path.realpath(__file__))
-                conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+                conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
                 db = conn.cursor()
                 db.execute("SELECT title FROM movies WHERE id = (?)",[entry[2]])
                 tmp = list(entry)
@@ -433,7 +436,7 @@ def showMoviesinList(list_id):
         tmpList2 = []
         for entry in tmpList:
             ROOT = path.dirname(path.realpath(__file__))
-            conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+            conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
             db = conn.cursor()
             db.execute("SELECT title FROM movies WHERE id = (?)",[entry[2]])
             tmp = list(entry)
@@ -470,7 +473,7 @@ def newlist():
 @app.route("/actor/<actorname>", methods = ["GET","POST"])
 def actor(actorname):
     ROOT = path.dirname(path.realpath(__file__))
-    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
     actorname = request.form.get("actorname")
     db = conn.cursor()
     db.execute("SELECT * FROM movies WHERE id in ( SELECT movie_id FROM stars WHERE person_id in ( SELECT id FROM people WHERE name LIKE (?)))",[actorname])
@@ -480,7 +483,7 @@ def actor(actorname):
 @app.route("/director/<directorname>", methods = ["GET","POST"])
 def director(directorname):
     ROOT = path.dirname(path.realpath(__file__))
-    conn = sqlite3.connect(path.join(ROOT, "movies.db"))
+    conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
     directorname = request.form.get("directorname")
     db = conn.cursor()
     db.execute("SELECT * FROM movies WHERE id in ( SELECT movie_id FROM directors WHERE person_id in ( SELECT id FROM people WHERE name LIKE (?)))",[directorname])
