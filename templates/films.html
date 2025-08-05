@@ -3,46 +3,45 @@
 
 {% block main %}
 <style>
- td{
-  margin: 0px 0px;
-  padding: 20px 0px;
-  float: left;
-  width: 40%;
-  border-top: 1px solid #4c4f52 !important;
-}
-table{
-  margin-left: 200px;
-}
-input{
-  margin: 0px;
-  padding: 0px;
-}
-form{
-  margin: 0px;
-  padding: 0px;
-  width: 50%;
-}
-.moviefont{
-        text-decoration: none !important;
-        font-family: Arial, Helvetica, sans-serif;
-        color:#313335 !important;
-        font-size: larger;
-    }
-    .moviefont:hover{
-        color:#4c4f52 !important;
-    }
-        #movieImages{
-            border-radius: 5%;
-        }
-        #movieImages:hover{
-          box-shadow:  0 0 0 2px #DDEEFF;
-        }
+  td{
+    margin: 0px 0px;
+    padding: 20px 20px;
+    float: left;
+    width: fit-content;
+    border-top: 1px solid #4c4f52 !important;
+  }
+  table{
+    margin-left: 200px;
+  }
+  input{
+    margin: 0px;
+    padding: 0px;
+  }
+  form{
+    margin: 0px;
+    padding: 0px;
+    width: 50%;
+  }
+  .moviefont{
+          text-decoration: none !important;
+          font-family: Arial, Helvetica, sans-serif;
+          color:#313335 !important;
+          font-size: larger;
+  }
+  .moviefont:hover{
+      color:#4c4f52 !important;
+  }
+  #movieImages{
+      border-radius: 5%;
+  }
+  #movieImages:hover{
+    box-shadow:  0 0 0 2px #DDEEFF;
+  }
 
 </style>
 <table id="tabledata">
-
 {%for movie in movies%}
-<tr >
+<tr>
    <td>
     <form action="/movie/{{ movie[0][1] | lower | replace(" ", "-") }}" method="post">
       <input name="moviename" type="hidden" value="{{movie[0][1]}}">

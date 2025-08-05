@@ -304,10 +304,11 @@ body{
                 <p>Watchlist</p>
             </div>
     </div>
-    <form action="/movie" method="get" style="border-bottom: 1px solid rgb(21, 24, 29);" id="rating-form">
+    <form action="/movie/{{ movie[0][1] | lower | replace(" ", "-") }}" method="post" style="border-bottom: 1px solid rgb(21, 24, 29);" id="rating-form">
         <p style="color: rgb(145, 162, 172) !important; margin: 0;">Rate</p>
         <div class="rating">
             <input type="hidden" value="{{movie[0][1]}}" name="moviename">
+            <input type="hidden" value="{{movie[0][0]}}" name="movie_id">
             <input type="radio" name="rating" value="5" id="5" {{rating[5]}}><label for="5">☆</label>
             <input type="radio" name="rating" value="4" id="4" {{rating[4]}}><label for="4">☆</label>
             <input type="radio" name="rating" value="3" id="3" {{rating[3]}}><label for="3">☆</label>

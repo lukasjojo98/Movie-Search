@@ -2,18 +2,15 @@ from flask import redirect, render_template, request, session
 from functools import wraps
 
 def apology(message, code=400):
-    """Render message as an apology to user."""
-    def escape(s):
-        """
-        Escape special characters.
-
-        https://github.com/jacebrowning/memegen#special-characters
-        """
-        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
-                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
-            s = s.replace(old, new)
-        return s
-    return render_template("apology.html", top=code, bottom=escape(message)), code
+    image_src = ""
+    print("Username" in message)
+    if "Username" in message:
+        image_src = "https://api.memegen.link/images/spiderman/username_already_exists.jpg?watermark=MemeComplete.com&token=mwsmz4o16r1wticvvdhb"
+    elif "empty" in message:
+        image_src = "https://api.memegen.link/images/mordor/one_does_not_simply/truncate_the_password_fields.jpg?watermark=MemeComplete.com&token=08ctdp38ly830pj22koi"
+    elif "match" in message:
+        image_src = "https://api.memegen.link/images/grumpycat/not_funny/passwords_do_not_match.jpg?watermark=MemeComplete.com&token=upkkuu9kcdnif4yhhz3x"
+    return render_template("apology.html", top=code, bottom=message, image_src=image_src)
 
 
 def login_required(f):
