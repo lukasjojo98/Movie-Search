@@ -12,7 +12,6 @@ import os, math
 app = Flask(__name__)
 load_dotenv(".env")
 movie_db_filepath = os.environ.get('MOVIE_DB')
-
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 app.config["SESSION_PERMANENT"] = False
@@ -179,10 +178,15 @@ def index():
 
 @app.route("/movie/<movie_name>", methods=["GET","POST"])
 def movie(movie_name):
+    print("movie")
+    try: user_id = session["user_id"]
+    except: return redirect("/register")
     rating = {1:"unchecked", 2: "unchecked", 3:"unchecked", 4:"unchecked", 5:"unchecked"}
     if request.method == "POST":
+        print(request.form)
         movie_name = request.form.get("moviename")
         movie_id = request.form.get("movie_id")
+        selectedRating = request.form.get("rating")
         ROOT = path.dirname(path.realpath(__file__))
         conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
         db = conn.cursor()
@@ -207,12 +211,18 @@ def movie(movie_name):
         db.execute("SELECT * FROM ratings WHERE user_id = (?) AND movie_id = (?)",[session["user_id"], movie_id])
         ratingDatabase = db.fetchall()
         if len(ratingDatabase) == 0:
+            db.execute("INSERT INTO ratings (user_id, movie_id, date, rating) VALUES (?,?,?,?)",[session["user_id"],movie_id,datetime.now(),selectedRating])
+            conn.commit()
+        elif ratingDatabase[0][3] == selectedRating:
             pass
-        else:
-            rating[ratingDatabase[0][3]] = "checked"
-        print(movie)
+        elif ratingDatabase[0][3] != selectedRating:
+            db.execute("UPDATE ratings SET date = (?), rating = (?) WHERE user_id = (?) AND movie_id = (?)",[datetime.now(),selectedRating,session["user_id"], movie_id])
+            conn.commit()
+        if selectedRating != None:
+            rating[int(selectedRating)] = "checked"
         return render_template("movie.html", movie = movie, rating = rating, reviews = tmpReviews, lists = availableLists, director = director)
     else:
+        print(request.method)
         ROOT = path.dirname(path.realpath(__file__))
         conn = sqlite3.connect(path.join(ROOT, "users.db"))
         db = conn.cursor()
@@ -244,7 +254,7 @@ def movie(movie_name):
         elif ratingDatabase[0][3] != selectedRating:
             db.execute("UPDATE ratings SET date = (?), rating = (?) WHERE user_id = (?) AND movie_id = (?)",[datetime.now(),selectedRating,session["user_id"], movie_id])
             conn.commit()
-        return render_template("movie.html",movie = movie, rating = rating,reviews = tmpReviews, lists = availableLists)
+        return render_template("movie.html", movie = movie, rating = rating,reviews = tmpReviews, lists = availableLists)
 
 @app.route("/search", methods =["GET","POST"])
 def search():

@@ -1,28 +1,32 @@
 #!/bin/bash
 
-# Exit on error
-set -e
+DB_FILE="users.db"
 
-# Prompt for port (default: 8080)
-read -p "🔌 Auf welchem Port soll die App laufen? [8080]: " USER_PORT
-USER_PORT=${USER_PORT:-8080}  # Default auf 8080 setzen, wenn leer
+echo "📦 Setup wird gestartet..."
 
-# Load .env variables
+# --- Lade Variablen aus .env ---
 if [ ! -f .env ]; then
-  echo "❌ .env-Datei nicht gefunden!"
-  exit 1
+    echo "❌ .env-Datei nicht gefunden!"
+    exit 1
 fi
 
-# Export variables from .env
 export $(grep -v '^#' .env | xargs)
 
-# Check if TMDB_API_KEY is set
+# --- Prüfe TMDB_API_KEY ---
 if [ -z "$TMDB_API_KEY" ]; then
-  echo "❌ TMDB_API_KEY ist in der .env-Datei nicht gesetzt."
-  exit 1
+    echo "❌ TMDB_API_KEY ist in der .env-Datei nicht gesetzt."
+    exit 1
 fi
 
-# Create env.js with the API key
+# --- Prüfe USER_PORT ---
+if [ -z "$USER_PORT" ]; then
+    echo "❌ USER_PORT ist nicht in der .env-Datei gesetzt."
+    exit 1
+fi
+
+# --- Erstelle static/env.js ---
+mkdir -p static
+
 cat <<EOF > static/env.js
 export const API_KEY = "$TMDB_API_KEY";
 export default API_KEY;
@@ -30,9 +34,42 @@ EOF
 
 echo "✅ static/env.js wurde mit TMDB_API_KEY erstellt."
 
-# Build Docker image
+# --- Prüfe und erstelle users.db ---
+if ! command -v sqlite3 &> /dev/null; then
+    echo "❌ sqlite3 ist nicht installiert. Bitte installiere es zuerst."
+    exit 1
+fi
+
+if [ -f "$DB_FILE" ]; then
+    echo "✅ $DB_FILE existiert bereits. Keine Aktion notwendig."
+else
+    echo "📦 Erstelle $DB_FILE mit eingebettetem Schema..."
+    sqlite3 "$DB_FILE" <<EOF
+CREATE TABLE ratings(user_id int, movie_id int, date DATETIME, rating int);
+CREATE TABLE reviews(review_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id int, movie_id int, date DATETIME, text VARCHAR(65000));
+CREATE TABLE sqlite_sequence(name TEXT, seq INTEGER);
+CREATE TABLE watchlist(user_id int, movie_id int, watchlist_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL);
+CREATE TABLE userInfo(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL, loggedfilms int);
+CREATE TABLE listEntries(list_id int, user_id int, movie_id int);
+CREATE TABLE list(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, listname TEXT NOT NULL, description TEXT NOT NULL, user_id int, moviecount int);
+EOF
+
+    if [ $? -eq 0 ]; then
+        echo "✅ $DB_FILE wurde erfolgreich erstellt."
+    else
+        echo "❌ Fehler beim Erstellen von $DB_FILE."
+        exit 1
+    fi
+fi
+
+# --- Docker Image bauen ---
+echo "🐳 Baue Docker-Image..."
 docker build -t movie-search-app .
 
-# Run Docker container on specified port
+# --- Docker Container starten ---
 echo "🚀 Starte Container auf Port $USER_PORT ..."
-docker run -p $USER_PORT:5000 -e TMDB_API_KEY="$TMDB_API_KEY" movie-search-app
+docker run -p $USER_PORT:5000 \
+  -e TMDB_API_KEY="$TMDB_API_KEY" \
+  -v "$(pwd)/users.db:/app/users.db" \
+  movie-search-app
+
