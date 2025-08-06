@@ -49,6 +49,7 @@ Create a file named `.env` in the project root with the following content:
 ```env
 TMDB_API_KEY=your_tmdb_api_key_here
 MOVIE_DB=filepath_to_movie_database
+USER_PORT=8080
 ```
 
 ## 🚀 Getting Started
