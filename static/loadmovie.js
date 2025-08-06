@@ -1,68 +1,3 @@
-import { API_KEY } from './env.js';
-
-let baseURL = 'https://api.themoviedb.org/3/';
-let configData = null;
-let baseImageURL = "https://image.tmdb.org/t/p/";
-let imageSize = "w185";
-let posterPath = null;
-let id = 22;
-
-let getConfig =  function() {
-    let url = "".concat(baseURL, 'configuration?api_key=', API_KEY);
-    fetch(url)
-    .then((result)=>{
-        return result.json();
-    })
-    .then((data)=>{
-        baseImageURL = data.images.secure_base_url;
-        configData = data.images;
-        runSearch(document.getElementById("movie").innerHTML);
-    })
-    .catch(function(err){
-        alert(err);
-    });
-}
-
-let runSearch =  function (keyword) {
-    let url = ''.concat(baseURL, 'search/movie?api_key=', API_KEY, '&query=', keyword);
-    fetch(url)
-    .then(result=>result.json())
-    .then((data)=>{
-    posterPath = data["results"][0]["poster_path"];
-    id = data["results"][0]["id"];
-    var averageScore = data["results"][0]["vote_average"] / 2;
-    let imageurl = "".concat(baseImageURL,imageSize,posterPath);
-    document.getElementById("image").src = imageurl;
-    document.getElementById("overviewText").innerHTML = data["results"][0]["overview"];
-    findActors(id);
-    })
-}
-
-let findActors = function(movieID){
-    let actorUrl = ''.concat(baseURL, 'movie/', movieID, '/credits?api_key=', API_KEY, '&language=en-US');
-    fetch(actorUrl)
-    .then(result=>result.json())
-    .then((data) => {
-    var actorList = data["cast"];
-    let actorRowDivList = document.getElementById("actorData").children;
-    let index = 0;
-    for(var i = 0; i < 12; i++ ){
-        if(i%4 == 0){
-            index++;
-        }
-        var formElement = document.createElement("form");
-        formElement.method = "post";
-        var inputElement = document.createElement("input");
-        inputElement.type = "submit";
-        inputElement.value = actorList[i].name;
-        inputElement.name = "actorname";
-        formElement.action = "/actor/" + String(actorList[i].name).toLowerCase().replace(" ", "-");
-        formElement.appendChild(inputElement);
-        document.getElementById("actorData").appendChild(formElement);
-    }
-    });
-}
-
 var selectedLists = []
 function addMovieToList(element){   // leerer String bedeutet unselectedColor
     var currentIndex = 0;
@@ -90,7 +25,6 @@ function addMovieToList(element){   // leerer String bedeutet unselectedColor
     }
     document.getElementById("selectedLists").innerHTML = (selectedLists.length >= 2) ? selectedLists.length + " lists selected":selectedLists.length + " list selected";
 }
-document.addEventListener('DOMContentLoaded', getConfig);
 var modal = document.getElementById("myModal");
 var modal2 = document.getElementById("myModal2");
 window.onclick = function(event) {

@@ -243,8 +243,8 @@ body{
 <body>
 <div class="wrapper">
     <div class="poster">
-<img src="" alt="movie" id="image">
-</div>
+        <img src="{{image_url}}" alt="movie" id="image">
+    </div>
 <div class="middle-container">
     <div class="middle-item">
         <div class="header-item">
@@ -261,14 +261,20 @@ body{
             </div>
             </div>
         </div>
-        <p id="overviewText" class="description"></p>
+        <p id="overviewText" class="description">{{overview_text}}</p>
     </div>
 <div id="actorData">
+    <!-- <div class="actor-row"></div>
     <div class="actor-row"></div>
     <div class="actor-row"></div>
     <div class="actor-row"></div>
-    <div class="actor-row"></div>
-    <div class="actor-row"></div>
+    <div class="actor-row"></div> -->
+    {%for actor in actor_list%}
+    <form action="/actor/{{ actor["name"] | lower | replace(" ", "-") }}" method="post">
+        <input type="submit" value="{{actor["name"]}}">
+        <input type="hidden" name="actorname" value="{{ actor["name"] | lower | replace(" ", "-") }}">
+    </form>
+    {%endfor%}
 </div>
 <table class="reviews">
     {%for review in reviews%}

@@ -65,7 +65,7 @@
 <div class="container">
   {%for movie in movies%}
   <div class="container-item" id="container-item-{{loop.index}}">
-    <img src="" alt="{{movie[1]}}" class="images" name="{{movie[1]}}">
+    <img src="{{movie[4]}}" alt="{{movie[1]}}" class="images" name="{{movie[1]}}">
     <div class="title-item">
         <div style="display: flex; gap: 5px;">
             <form action="/movie/{{ movie[1] | lower | replace(" ", "-") }}" method="post" id="movie-form-{{loop.index}}">
@@ -88,5 +88,5 @@
   </div>
   {%endfor%}
 </div>
-<script src="/static/loadimages.js" type="module"></script>
+<script src="/static/loadimages.js"></script>
   {% endblock %}

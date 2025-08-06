@@ -207,15 +207,15 @@
     <div id="layout-movies">
         {%for movie in movies%}
         <form action="/movie/{{ movie[1] | lower | replace(" ", "-") }}" method="post">
-            <input type="image" src="" alt="" id="images" name="{{movie[0]}}">
+            <input type="image" src="{{movie[2]}}" alt="" id="images" name="{{movie[0]}}">
             <input type="hidden" name="movie_id" value="{{movie[0]}}">
             <input type="hidden" name="moviename" value="{{movie[1]}}">
         </form>
         {% endfor %}
     </div>
 </div>
-    <script src="/static/layout.js" type="module">
-    </script>
+    <!-- <script src="/static/layout.js" type="module">
+    </script> -->
             {% endblock %}
         </main>
 

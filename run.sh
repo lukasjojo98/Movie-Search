@@ -24,16 +24,6 @@ if [ -z "$USER_PORT" ]; then
     exit 1
 fi
 
-# --- Erstelle static/env.js ---
-mkdir -p static
-
-cat <<EOF > static/env.js
-export const API_KEY = "$TMDB_API_KEY";
-export default API_KEY;
-EOF
-
-echo "✅ static/env.js wurde mit TMDB_API_KEY erstellt."
-
 # --- Prüfe und erstelle users.db ---
 if ! command -v sqlite3 &> /dev/null; then
     echo "❌ sqlite3 ist nicht installiert. Bitte installiere es zuerst."

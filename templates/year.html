@@ -45,7 +45,7 @@
 <div class="container">
     {%for year in years%}
         <div class="container-item" id="container-item-{{loop.index}}">
-            <img src="" alt="{{year[1]}}" class="images" name="{{year[1]}}">
+            <img src="{{year[4]}}" alt="{{year[1]}}" class="images" name="{{year[1]}}">
             <div class="title-item">
                 <div style="display: flex; gap: 20px;">
                     <form action="/movie/{{ year[1] | lower | replace(" ", "-") }}" method="post" id="movie-form-{{loop.index}}">

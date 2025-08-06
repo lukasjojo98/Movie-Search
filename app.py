@@ -1,17 +1,20 @@
 from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session
-import sqlite3
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlite3 import Error
 from helpers import apology, login_required
 from os import path
 from dotenv import load_dotenv
-import os, math
+import os, math, sqlite3
+from api import *
 
 app = Flask(__name__)
+
 load_dotenv(".env")
 movie_db_filepath = os.environ.get('MOVIE_DB')
+tmdb_api_key = os.environ.get('TMDB_API_KEY')
+
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 app.config["SESSION_PERMANENT"] = False
@@ -173,7 +176,14 @@ def index():
     try: db.execute("SELECT id, title FROM ratings, movies WHERE id = movie_id AND votes > 40000 ORDER BY rating DESC LIMIT 10;")
     except: print("error")
     movies = db.fetchall()
-    return render_template("layout.html", username = username, movies = movies)
+    movies_with_image_urls = []
+    for movie in movies:
+        image_url = find_poster_by_imdb_id(movie[0])
+        movie = list(movie)
+        movie.append(image_url)
+        movies_with_image_urls.append(movie)
+    print(movies_with_image_urls)
+    return render_template("layout.html", username = username, movies = movies_with_image_urls)
 
 
 @app.route("/movie/<movie_name>", methods=["GET","POST"])
@@ -183,7 +193,6 @@ def movie(movie_name):
     except: return redirect("/register")
     rating = {1:"unchecked", 2: "unchecked", 3:"unchecked", 4:"unchecked", 5:"unchecked"}
     if request.method == "POST":
-        print(request.form)
         movie_name = request.form.get("moviename")
         movie_id = request.form.get("movie_id")
         selectedRating = request.form.get("rating")
@@ -210,6 +219,7 @@ def movie(movie_name):
             tmpReviews.append(tmpList)
         db.execute("SELECT * FROM ratings WHERE user_id = (?) AND movie_id = (?)",[session["user_id"], movie_id])
         ratingDatabase = db.fetchall()
+        print(selectedRating)
         if len(ratingDatabase) == 0:
             db.execute("INSERT INTO ratings (user_id, movie_id, date, rating) VALUES (?,?,?,?)",[session["user_id"],movie_id,datetime.now(),selectedRating])
             conn.commit()
@@ -220,7 +230,8 @@ def movie(movie_name):
             conn.commit()
         if selectedRating != None:
             rating[int(selectedRating)] = "checked"
-        return render_template("movie.html", movie = movie, rating = rating, reviews = tmpReviews, lists = availableLists, director = director)
+        image_url, actor_list, overview_text = run_search(movie[0][1])
+        return render_template("movie.html", movie = movie, rating = rating, reviews = tmpReviews, lists = availableLists, director = director, actor_list=actor_list, image_url=image_url, overview_text=overview_text)
     else:
         print(request.method)
         ROOT = path.dirname(path.realpath(__file__))
@@ -265,7 +276,13 @@ def search():
         dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE m.title LIKE '%"+ request.args.get("moviename")+ "%' AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
         movies = db.execute(dbquery).fetchall()
         print(movies)
-        return render_template("searchresults.html", movies = movies, searchquery = request.args.get("moviename"))
+        movies_with_image_urls = []
+        for movie in movies:
+            image_url = find_poster_by_imdb_id(movie[0])
+            movie = list(movie)
+            movie.append(image_url)
+            movies_with_image_urls.append(movie)
+        return render_template("searchresults.html", movies = movies_with_image_urls, searchquery = request.args.get("moviename"))
 
 @app.route("/year", methods=["GET", "POST"])
 def year():
@@ -273,14 +290,25 @@ def year():
     conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
     db = conn.cursor()
     if request.method == "POST":
-        dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE year = " + request.form.get("releaseyear") + " AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
+        dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE year = " + request.form.get("releaseyear") + " AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC LIMIT 50;"
         years = db.execute(dbquery).fetchall()
-        print(years)
-        return render_template("year.html", years = years)
+        movies_with_image_urls = []
+        for movie in years:
+            image_url = find_poster_by_imdb_id(movie[0])
+            movie = list(movie)
+            movie.append(image_url)
+            movies_with_image_urls.append(movie)
+        return render_template("year.html", years = movies_with_image_urls)
     elif request.method == "GET":
-        dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE year = " + request.args.get("releaseyear") + " AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
+        dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE year = " + request.args.get("releaseyear") + " AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC LIMIT 50;"
         years = db.execute(dbquery).fetchall()
-        return render_template("year.html", years = years)
+        movies_with_image_urls = []
+        for movie in years:
+            image_url = find_poster_by_imdb_id(movie[0])
+            movie = list(movie)
+            movie.append(image_url)
+            movies_with_image_urls.append(movie)
+        return render_template("year.html", years = movies_with_image_urls)
     else:
         return redirect("/")
 
@@ -309,8 +337,14 @@ def films():
         db.execute("SELECT * FROM movies WHERE id = (?)",[i[1]])
         movieList.append(db.fetchall())
     print(movieList)
-    return render_template("films.html", movies = movieList)
-
+    movies_with_image_urls = []
+    for movie in movieList:
+        image_url = find_poster_by_imdb_id(movie[0][0])
+        movie = list(movie[0])
+        movie.append(image_url)
+        movies_with_image_urls.append(movie)
+    print(movies_with_image_urls)
+    return render_template("films.html", movies = movies_with_image_urls)
 
 @app.route("/reviews", methods = ["GET","POST"])
 def reviews():
@@ -484,22 +518,35 @@ def newlist():
 def actor(actorname):
     ROOT = path.dirname(path.realpath(__file__))
     conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
-    actorname = request.form.get("actorname")
+    actorname = str(request.form.get("actorname")).replace("-", " ")
     db = conn.cursor()
     db.execute("SELECT * FROM movies WHERE id in ( SELECT movie_id FROM stars WHERE person_id in ( SELECT id FROM people WHERE name LIKE (?)))",[actorname])
-    movieList = db.fetchall()
-    return render_template("actor.html", actorName = actorname, movies = movieList)
+    movies = db.fetchall()
+    actor_image_url, bio_text = get_actor_image(actorname)
+    movies_with_image_urls = []
+    for movie in movies:
+        image_url = find_poster_by_imdb_id(movie[0])
+        movie = list(movie)
+        movie.append(image_url)
+        movies_with_image_urls.append(movie)
+    return render_template("actor.html", actorName = actorname, movies = movies_with_image_urls, actor_image_url=actor_image_url, bio_text=bio_text)
 
 @app.route("/director/<directorname>", methods = ["GET","POST"])
 def director(directorname):
     ROOT = path.dirname(path.realpath(__file__))
     conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
-    directorname = request.form.get("directorname")
+    directorname = str(request.form.get("directorname")).replace("-", " ")
     db = conn.cursor()
     db.execute("SELECT * FROM movies WHERE id in ( SELECT movie_id FROM directors WHERE person_id in ( SELECT id FROM people WHERE name LIKE (?)))",[directorname])
-    movieList = db.fetchall()
-    print(directorname)
-    return render_template("director.html", directorName = directorname, movies = movieList)
+    movies = db.fetchall()
+    director_image_url, bio_text = get_actor_image(directorname)
+    movies_with_image_urls = []
+    for movie in movies:
+        image_url = find_poster_by_imdb_id(movie[0])
+        movie = list(movie)
+        movie.append(image_url)
+        movies_with_image_urls.append(movie)
+    return render_template("director.html", directorName = directorname, movies = movies_with_image_urls, director_image_url=director_image_url, bio_text=bio_text)
 
 if __name__=="__main__":
     app.run("0.0.0.0", port="5000")
