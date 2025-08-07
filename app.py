@@ -182,13 +182,11 @@ def index():
         movie = list(movie)
         movie.append(image_url)
         movies_with_image_urls.append(movie)
-    print(movies_with_image_urls)
     return render_template("layout.html", username = username, movies = movies_with_image_urls)
 
 
 @app.route("/movie/<movie_name>", methods=["GET","POST"])
 def movie(movie_name):
-    print("movie")
     try: user_id = session["user_id"]
     except: return redirect("/register")
     rating = {1:"unchecked", 2: "unchecked", 3:"unchecked", 4:"unchecked", 5:"unchecked"}
@@ -219,7 +217,6 @@ def movie(movie_name):
             tmpReviews.append(tmpList)
         db.execute("SELECT * FROM ratings WHERE user_id = (?) AND movie_id = (?)",[session["user_id"], movie_id])
         ratingDatabase = db.fetchall()
-        print(selectedRating)
         if len(ratingDatabase) == 0:
             db.execute("INSERT INTO ratings (user_id, movie_id, date, rating) VALUES (?,?,?,?)",[session["user_id"],movie_id,datetime.now(),selectedRating])
             conn.commit()
@@ -233,7 +230,6 @@ def movie(movie_name):
         image_url, actor_list, overview_text = run_search(movie[0][1])
         return render_template("movie.html", movie = movie, rating = rating, reviews = tmpReviews, lists = availableLists, director = director, actor_list=actor_list, image_url=image_url, overview_text=overview_text)
     else:
-        print(request.method)
         ROOT = path.dirname(path.realpath(__file__))
         conn = sqlite3.connect(path.join(ROOT, "users.db"))
         db = conn.cursor()
@@ -275,7 +271,6 @@ def search():
     if request.method == "GET":
         dbquery = "SELECT m.id, m.title, m.year, p.name FROM movies m, ratings r, directors d, people p WHERE m.title LIKE '%"+ request.args.get("moviename")+ "%' AND r.movie_id=m.id AND d.movie_id=m.id AND d.person_id=p.id  ORDER BY votes DESC;"
         movies = db.execute(dbquery).fetchall()
-        print(movies)
         movies_with_image_urls = []
         for movie in movies:
             image_url = find_poster_by_imdb_id(movie[0])
@@ -336,14 +331,12 @@ def films():
     for i in movies:
         db.execute("SELECT * FROM movies WHERE id = (?)",[i[1]])
         movieList.append(db.fetchall())
-    print(movieList)
     movies_with_image_urls = []
     for movie in movieList:
         image_url = find_poster_by_imdb_id(movie[0][0])
         movie = list(movie[0])
         movie.append(image_url)
         movies_with_image_urls.append(movie)
-    print(movies_with_image_urls)
     return render_template("films.html", movies = movies_with_image_urls)
 
 @app.route("/reviews", methods = ["GET","POST"])
@@ -365,9 +358,11 @@ def reviews():
         for movie in movies:
             db.execute("SELECT * FROM movies WHERE id = (?)",[movie[2]])
             result = db.fetchall()
+            image_url = find_poster_by_imdb_id(movie[2])
             tmpList = list(movie)
             tmpList.append(result[0][1])
             tmpList.append(result[0][2])
+            tmpList.append(image_url)
             tmpMovies.append(tmpList)
         return render_template("review.html", movies = tmpMovies)
     else:
@@ -383,9 +378,11 @@ def reviews():
         for movie in movies:
             db.execute("SELECT * FROM movies WHERE id = (?)",[movie[2]])
             result = db.fetchall()
+            image_url = find_poster_by_imdb_id(movie[2])
             tmpList = list(movie)
             tmpList.append(result[0][1])
             tmpList.append(result[0][2])
+            tmpList.append(image_url)
             tmpMovies.append(tmpList)
         return render_template("review.html", movies = tmpMovies)
 
@@ -453,7 +450,6 @@ def listRoute():
                 tmp.append(list(db.fetchall()[0])[0])
                 tmpList2.append(tmp)
             finalList.append(tmpList2)
-        print(finalList)
         for m in range(0, len(finalList)):
             if len(list(finalList)[m]) < 4:
                 for n in range(len(list(finalList)[m]) - 1, 3):
@@ -504,7 +500,6 @@ def newlist():
     if request.method == "GET":
         return render_template("newList.html")
     else:
-        print(request.form)
         listname = request.form.get("listname")
         listdescription = request.form.get("description")
         ROOT = path.dirname(path.realpath(__file__))
