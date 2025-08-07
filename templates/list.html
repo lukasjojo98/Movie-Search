@@ -4,93 +4,124 @@
 {% block main %}
 <title>Lists</title>
 <style>
-td{
-  margin: 0px 0px;
-  padding: 80px 0px;
-  float: left;
-  width: 60%;
-}
-input{
-  margin: 0px;
-  padding: 0px;
-}
-form{
-  margin: 0px;
-  padding: 0px;
-  width: 50%;
-}
-#tableData{
-  margin-left: 100px;
-}
-.moviefont{
-        text-decoration: none !important;
-        font-family: Arial, Helvetica, sans-serif;
-        color:white !important;
-        font-size: larger;
-        margin-left: 100px;
+  td {
+    margin: 0px 0px;
+    padding: 80px 0px;
+    float: left;
+    width: 60%;
+  }
 
-    }
-    .moviefont:hover{
-        color:#4c4f52 !important;
-    }
-    #movieImages{
-            border-radius: 5%;
-            box-shadow: 0 0 5px rgb(30, 41, 41);
-        }
-        #movieImages:hover{
-          box-shadow:  0 0 0 2px #DDEEFF;
-        }
+  input {
+    margin: 0px;
+    padding: 0px;
+  }
 
-    td img{
-      position: relative;
-        }
-      #sth img{
-          position: absolute;
-        }
-        .modal2 {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
+  form {
+    margin: 0px;
+    padding: 0px;
+    width: 50%;
+  }
 
-.modal-content2 {
-  background-color: rgb(68, 84, 102);
-  padding-top: 10px;
-  margin: auto;
-  border: 1px solid #888;
-  width: 25%;
-  height: 80%;
-  border-radius: 5px;
-}
-  </style>
+  #tableData {
+    margin-left: 100px;
+  }
+
+  .moviefont {
+    text-decoration: none !important;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white !important;
+    font-size: larger;
+    margin-left: 100px;
+
+  }
+
+  .moviefont:hover {
+    color: #4c4f52 !important;
+  }
+
+  #movieImages {
+    border-radius: 5%;
+    box-shadow: 0 0 5px rgb(30, 41, 41);
+  }
+
+  #movieImages:hover {
+    box-shadow: 0 0 0 2px #DDEEFF;
+  }
+
+  td img {
+    position: relative;
+  }
+
+  #sth img {
+    position: absolute;
+  }
+
+  .modal2 {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+  }
+
+  .modal-content2 {
+    background-color: rgb(68, 84, 102);
+    padding-top: 10px;
+    margin: auto;
+    border: 1px solid #888;
+    width: 25%;
+    height: 80%;
+    border-radius: 5px;
+  }
+</style>
 <table id="tabledata">
-{%for result in results%}
-<tr id="listentry"> <td><div style="position: relative;" id="sth">
-  <img src="" alt="{{finalList[loop.index-1][0][3]}}" class="images" name="{{finalList[loop.index-1][0][3]}}" id="movieImages" style="float: left; z-index: 1; left: 190px;">
-  <img src="" alt="{{finalList[loop.index-1][1][3]}}" class="images" name="{{finalList[loop.index-1][1][3]}}" id="movieImages" style="float: left; z-index: 2; left: 220px;">
-  <img src="" alt="{{finalList[loop.index-1][2][3]}}" class="images" name="{{finalList[loop.index-1][2][3]}}" id="movieImages" style="float: left; z-index: 3; left: 250px;">
-  <img src="" alt="{{finalList[loop.index-1][3][3]}}" class="images" name="{{finalList[loop.index-1][3][3]}}" id="movieImages" style="float: left; z-index: 4; left: 280px;">
-</div>
-</td>
-  <td style="position: absolute; left: 310px;"><form action="/list/{{result[0]}}" method="post"><input name="movie" type="hidden" value="{{result[1]}}" >
-          <input type="submit" value="{{result[1]}}" class="moviefont" name="moviename"></td></form>
-    <td style="position: relative; left: 490px;"> <form action="/year" method="post"><input type="submit" name="releaseyear"value="{{result[2]}}" class="movieyear"></form></td>
-</tr>
-{%endfor%}
+  {%for result in results%}
+  <tr id="listentry">
+    <td>
+      <div style="position: relative;" id="sth">
+        <img src="{{finalList[loop.index-1][0][4]}}" alt="{{finalList[loop.index-1][0][3]}}" class="images"
+          name="{{finalList[loop.index-1][0][3]}}" id="movieImages" style="float: left; z-index: 1; left: 190px;">
+        <img src="{{finalList[loop.index-1][1][4]}}" alt="{{finalList[loop.index-1][1][3]}}" class="images"
+          name="{{finalList[loop.index-1][1][3]}}" id="movieImages" style="float: left; z-index: 2; left: 220px;">
+        <img src="{{finalList[loop.index-1][2][4]}}" alt="{{finalList[loop.index-1][2][3]}}" class="images"
+          name="{{finalList[loop.index-1][2][3]}}" id="movieImages" style="float: left; z-index: 3; left: 250px;">
+        <img src="{{finalList[loop.index-1][3][4]}}" alt="{{finalList[loop.index-1][3][3]}}" class="images"
+          name="{{finalList[loop.index-1][3][3]}}" id="movieImages" style="float: left; z-index: 4; left: 280px;">
+      </div>
+    </td>
+    <td style="position: absolute; left: 310px;">
+      <form action="/list/{{result[0]}}" method="post"><input name="movie" type="hidden" value="{{result[1]}}">
+        <input type="submit" value="{{result[1]}}" class="moviefont" name="moviename">
+    </td>
+    </form>
+    <td style="position: relative; left: 490px;">
+      <form action="/year" method="post"><input type="submit" name="releaseyear" value="{{result[2]}}"
+          class="movieyear"></form>
+    </td>
+  </tr>
+  {%endfor%}
 </table>
 
-<div style="position: absolute; left: 992px; top: 205px; border-radius: 5px; background-color: rgb(68, 84, 102); padding: 0px 0px;">
+<div
+  style="position: absolute; left: 992px; top: 205px; border-radius: 5px; background-color: rgb(68, 84, 102); padding: 0px 0px;">
   <form action="/list/new" method="GET" style="padding: 15px 30px;">
     <input type="submit" value="Start a new list..." id="addListButton">
   </form>
-  </div>
+</div>
 
-  {% endblock %}
+{% endblock %}

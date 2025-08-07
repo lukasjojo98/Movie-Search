@@ -416,8 +416,10 @@ def listRoute():
                 conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
                 db = conn.cursor()
                 db.execute("SELECT title FROM movies WHERE id = (?)",[entry[2]])
+                image_url = find_poster_by_imdb_id(entry[2])
                 tmp = list(entry)
                 tmp.append(list(db.fetchall()[0])[0])
+                tmp.append(image_url)
                 tmpList2.append(tmp)
             finalList.append(tmpList2)
         for m in range(0, len(finalList)):
@@ -446,8 +448,10 @@ def listRoute():
                 conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
                 db = conn.cursor()
                 db.execute("SELECT title FROM movies WHERE id = (?)",[entry[2]])
+                image_url = find_poster_by_imdb_id(entry[2])
                 tmp = list(entry)
                 tmp.append(list(db.fetchall()[0])[0])
+                tmp.append(image_url)
                 tmpList2.append(tmp)
             finalList.append(tmpList2)
         for m in range(0, len(finalList)):
@@ -479,21 +483,14 @@ def showMoviesinList(list_id):
             conn = sqlite3.connect(path.join(ROOT, movie_db_filepath))
             db = conn.cursor()
             db.execute("SELECT title FROM movies WHERE id = (?)",[entry[2]])
+            image_url = find_poster_by_imdb_id(entry[2])
             tmp = list(entry)
             tmp.append(list(db.fetchall()[0])[0])
+            tmp.append(image_url)
             tmpList2.append(tmp)
         finalList.append(tmpList2)
-    tmpList3 = []
-    tmpLength = math.ceil(len(finalList[0]) / 4)
-    frac, sth = math.modf(len(finalList[0]) / 4)
-    frac = math.ceil((1 - frac) * 4)
-    for l in range(0,tmpLength):
-        tmpList3.append("")
-    tmpList5 = list(finalList[0])
-    for n in range(0, frac):
-        tmpList4 = ["","","",""]
-        tmpList5.append(tmpList4)
-    return render_template("/listOverview.html",results = result, finalList = tmpList5, length = tmpList3)
+    finalList = finalList[0]
+    return render_template("/listOverview.html",results = result, movies = finalList)
 
 @app.route("/list/new", methods = ["GET","POST"])
 def newlist():
