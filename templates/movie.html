@@ -15,8 +15,30 @@
 </head>
 
 <style>
-body{
-    background-color: rgb(21, 24, 29);
+body{   
+    background-color: rgb(21, 24, 29);;
+}
+.wrapper-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 30px;
+}
+.backdrop-container {
+    width: 80%;
+    height: 400px;
+    margin: auto;
+    backdrop-filter: blur(15px);
+    background-image: url('{{ backdrop_path }}');
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 5px;
+     -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: cover;
 }
 #image{
     border-radius: 5px;
@@ -85,9 +107,8 @@ body{
     display: flex;
     justify-content: center;
     gap: 20px;
-    width: 80%;
+    width: 70%;
     margin: auto;
-
 }
 .reviews{
     margin: 50px 0;
@@ -241,6 +262,9 @@ body{
 }
 </style>
 <body>
+    <div class="wrapper-container">
+        <div class="backdrop-container"></div>
+        
 <div class="wrapper">
     <div class="poster">
         <img src="{{image_url}}" alt="movie" id="image">
@@ -264,11 +288,6 @@ body{
         <p id="overviewText" class="description">{{overview_text}}</p>
     </div>
 <div id="actorData">
-    <!-- <div class="actor-row"></div>
-    <div class="actor-row"></div>
-    <div class="actor-row"></div>
-    <div class="actor-row"></div>
-    <div class="actor-row"></div> -->
     {%for actor in actor_list%}
     <form action="/actor/{{ actor["name"] | lower | replace(" ", "-") }}" method="post">
         <input type="submit" value="{{actor["name"]}}">
@@ -327,10 +346,7 @@ body{
 <input type="hidden" value="{{movie[0][1]}}" name ="moviename">
 <input id="reviewButton" type="submit" name="review" value="Review..." style="text-decoration: none; color: rgb(145, 162, 172) !important; margin: 5px 0;">
  </form>
-<!--<form action="/watchlist" method="post">
-<input type="submit" name="watchlist" value="Add to Watchlist" style="text-decoration: none; color: rgb(145, 162, 172) !important; margin: 5px 0;">
-<input type="hidden" value="{{movie[0][1]}}" name ="moviename">
-</form>-->
+</div>
 </div>
 </div>
 </div>

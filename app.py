@@ -228,7 +228,8 @@ def movie(movie_name):
         if selectedRating != None:
             rating[int(selectedRating)] = "checked"
         image_url, actor_list, overview_text = run_search(movie[0][1])
-        return render_template("movie.html", movie = movie, rating = rating, reviews = tmpReviews, lists = availableLists, director = director, actor_list=actor_list, image_url=image_url, overview_text=overview_text)
+        backdrop_path = find_poster_by_imdb_id_backdrop(movie[0][0])
+        return render_template("movie.html", movie = movie, rating = rating, reviews = tmpReviews, lists = availableLists, director = director, actor_list=actor_list, image_url=image_url, overview_text=overview_text, backdrop_path=backdrop_path)
     else:
         ROOT = path.dirname(path.realpath(__file__))
         conn = sqlite3.connect(path.join(ROOT, "users.db"))
@@ -261,7 +262,8 @@ def movie(movie_name):
         elif ratingDatabase[0][3] != selectedRating:
             db.execute("UPDATE ratings SET date = (?), rating = (?) WHERE user_id = (?) AND movie_id = (?)",[datetime.now(),selectedRating,session["user_id"], movie_id])
             conn.commit()
-        return render_template("movie.html", movie = movie, rating = rating,reviews = tmpReviews, lists = availableLists)
+        backdrop_path = find_poster_by_imdb_id_backdrop(movie[0][0])
+        return render_template("movie.html", movie = movie, rating = rating,reviews = tmpReviews, lists = availableLists, backdrop_path=backdrop_path)
 
 @app.route("/search", methods =["GET","POST"])
 def search():

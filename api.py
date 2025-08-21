@@ -8,6 +8,8 @@ IMAGE_SIZE = "w154"
 BASE_URL_MOVIES = "https://api.themoviedb.org/3/"
 MOVIE_IMAGE_SIZE = "w185"
 
+MOVIE_BACKDROP_SIZE = "w1280"
+
 BASE_URL_TT = "https://api.themoviedb.org/3/find/tt";
 
 load_dotenv(".env")
@@ -21,9 +23,20 @@ def find_poster_by_imdb_id(imdb_id):
     url = f"{BASE_URL}{imdb_id_with_zeroes}?api_key={TMDB_API_KEY}&external_source=imdb_id"
     response = requests.get(url)
     data = response.json()
-    try: image_url = f"{BASE_IMAGE_URL}{IMAGE_SIZE}{data['movie_results'][0]['poster_path']}"
+    try: 
+        image_url = f"{BASE_IMAGE_URL}{IMAGE_SIZE}{data['movie_results'][0]['poster_path']}"
     except: return "https://st3.depositphotos.com/1322515/35964/v/600/depositphotos_359648638-stock-illustration-image-available-icon.jpg?forcejpeg=true"
     return image_url
+
+def find_poster_by_imdb_id_backdrop(imdb_id):
+    imdb_id_with_zeroes = add_leading_zeros(imdb_id, 7)
+    url = f"{BASE_URL}{imdb_id_with_zeroes}?api_key={TMDB_API_KEY}&external_source=imdb_id"
+    response = requests.get(url)
+    data = response.json()
+    try: 
+        backposter_url = f"{BASE_IMAGE_URL}{MOVIE_BACKDROP_SIZE}{data['movie_results'][0]['backdrop_path']}"
+    except: return "https://st3.depositphotos.com/1322515/35964/v/600/depositphotos_359648638-stock-illustration-image-available-icon.jpg?forcejpeg=true"
+    return backposter_url
 
 def run_search(keyword):
     url = f"{BASE_URL_MOVIES}search/movie?api_key={TMDB_API_KEY}&query={keyword}"
