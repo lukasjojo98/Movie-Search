@@ -1,16 +1,23 @@
+# Basis-Image
 FROM python:3.11-slim
 
+# Arbeitsverzeichnis im Container
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y openjdk-17-jdk && \
-    apt-get clean
-
+# Anforderungen installieren
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Quellcode kopieren
 COPY . .
 
+# Port freigeben
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+# Flask-Konfiguration
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_RUN_PORT=5000
+
+# Container-Startbefehl
+CMD ["flask", "run"]

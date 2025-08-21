@@ -37,7 +37,6 @@ else
     sqlite3 "$DB_FILE" <<EOF
 CREATE TABLE ratings(user_id int, movie_id int, date DATETIME, rating int);
 CREATE TABLE reviews(review_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id int, movie_id int, date DATETIME, text VARCHAR(65000));
-CREATE TABLE sqlite_sequence(name TEXT, seq INTEGER);
 CREATE TABLE watchlist(user_id int, movie_id int, watchlist_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL);
 CREATE TABLE userInfo(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL, loggedfilms int);
 CREATE TABLE listEntries(list_id int, user_id int, movie_id int);
@@ -59,7 +58,5 @@ docker build -t movie-search-app .
 # --- Docker Container starten ---
 echo "🚀 Starte Container auf Port $USER_PORT ..."
 docker run -p $USER_PORT:5000 \
-  -e TMDB_API_KEY="$TMDB_API_KEY" \
   -v "$(pwd)/users.db:/app/users.db" \
   movie-search-app
-

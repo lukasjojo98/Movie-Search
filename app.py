@@ -1,19 +1,19 @@
+
 from datetime import datetime
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlite3 import Error
-from helpers import apology, login_required
+from helpers import apology
 from os import path
 from dotenv import load_dotenv
-import os, math, sqlite3
+import os, sqlite3
 from api import *
 
 app = Flask(__name__)
 
 load_dotenv(".env")
 movie_db_filepath = os.environ.get('MOVIE_DB')
-tmdb_api_key = os.environ.get('TMDB_API_KEY')
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
